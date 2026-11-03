@@ -1,0 +1,101 @@
+import { useState } from 'react'
+import type { FormEvent } from 'react'
+import { Link } from 'react-router-dom'
+import { CheckCircle2 } from 'lucide-react'
+import Input from '../../../components/common/Input'
+import Button from '../../../components/common/Button'
+
+type Form = {
+  fullName: string
+  employeeId: string
+  email: string
+  password: string
+  confirmPassword: string
+}
+
+const empty: Form = { fullName: '', employeeId: '', email: '', password: '', confirmPassword: '' }
+
+export default function Signup() {
+  const [form, setForm] = useState<Form>(empty)
+  const [errors, setErrors] = useState<Partial<Form>>({})
+  const [loading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+
+  const update = (field: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm({ ...form, [field]: e.target.value })
+
+  const validate = () => {
+    const e: Partial<Form> = {}
+    if (!form.fullName.trim()) e.fullName = 'Full name is required'
+    if (!form.employeeId.trim()) e.employeeId = 'Employee ID is required'
+    if (!form.email.trim()) e.email = 'Email is required'
+    else if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = 'Enter a valid email'
+    if (!form.password) e.password = 'Password is required'
+    else if (form.password.length < 8) e.password = 'Password must be at least 8 characters'
+    if (!form.confirmPassword) e.confirmPassword = 'Please confirm your password'
+    else if (form.confirmPassword !== form.password) e.confirmPassword = 'Passwords do not match'
+    setErrors(e)
+    return Object.keys(e).length === 0
+  }
+
+  const handleSubmit = (ev: FormEvent) => {
+    ev.preventDefault()
+    if (!validate()) return
+    setLoading(true)
+    // Mock only. Role is never chosen here; the backend will set it, status = PENDING.
+    setTimeout(() => {
+      setLoading(false)
+      setSubmitted(true)
+    }, 1000)
+  }
+
+  if (submitted) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+        <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <CheckCircle2 className="mx-auto mb-3 text-green-600" size={40} />
+          <h1 className="text-xl font-semibold text-navy-800">Request submitted</h1>
+          <p className="mt-2 text-sm text-slate-600">
+            Your registration request has been submitted and is awaiting administrator approval.
+          </p>
+          <Link to="/login">
+            <Button className="mt-6 w-full">Back to login</Button>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-navy-700 font-bold text-white">
+            C
+          </div>
+          <h1 className="text-2xl font-semibold text-navy-800">Create your account</h1>
+          <p className="mt-1 text-sm text-slate-500">Requests are reviewed by an administrator</p>
+        </div>
+
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+          <Input id="fullName" label="Full Name" value={form.fullName} onChange={update('fullName')} error={errors.fullName} />
+          <Input id="employeeId" label="Employee ID" value={form.employeeId} onChange={update('employeeId')} error={errors.employeeId} />
+          <Input id="email" label="Email" type="email" value={form.email} onChange={update('email')} error={errors.email} />
+          <Input id="password" label="Password" type="password" value={form.password} onChange={update('password')} error={errors.password} />
+          <Input id="confirmPassword" label="Confirm Password" type="password" value={form.confirmPassword} onChange={update('confirmPassword')} error={errors.confirmPassword} />
+
+          <Button type="submit" loading={loading} className="w-full">
+            Submit request
+          </Button>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-slate-500">
+          Already have an account?{' '}
+          <Link to="/login" className="font-medium text-navy-600 hover:underline">
+            Log in
+          </Link>
+        </p>
+      </div>
+    </div>
+  )
+}
