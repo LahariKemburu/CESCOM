@@ -8,14 +8,14 @@ const MOCK_USERS: MockUser[] = [
   { id: '3', fullName: 'Field Employee', employeeId: 'EMP003', email: 'employee@cescom.com', password: 'Employee@123', role: 'EMPLOYEE', status: 'ACTIVE' },
 ]
 
-export function mockLogin(identifier: string, password: string): Promise<User> {
+export function mockLogin(email: string, password: string): Promise<User> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      const id = identifier.trim().toLowerCase()
+      const normalizedEmail = email.trim().toLowerCase()
       const found = MOCK_USERS.find(
-        (u) => (u.email.toLowerCase() === id || u.employeeId.toLowerCase() === id) && u.password === password,
+        (u) => u.email.toLowerCase() === normalizedEmail && u.password === password,
       )
-      if (!found) return reject(new Error('Invalid email/employee ID or password'))
+      if (!found) return reject(new Error('Invalid email or password'))
       if (found.status === 'PENDING') return reject(new Error('Your account is awaiting administrator approval'))
       resolve({
         id: found.id,

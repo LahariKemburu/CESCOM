@@ -9,18 +9,19 @@ export default function Login() {
   const { user, login } = useAuth()
   const navigate = useNavigate()
 
-  const [identifier, setIdentifier] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(false)
-  const [errors, setErrors] = useState<{ identifier?: string; password?: string }>({})
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
   const [formError, setFormError] = useState('')
   const [loading, setLoading] = useState(false)
 
   if (user) return <Navigate to="/home" replace />
 
   const validate = () => {
-    const e: { identifier?: string; password?: string } = {}
-    if (!identifier.trim()) e.identifier = 'Email or Employee ID is required'
+    const e: { email?: string; password?: string } = {}
+    if (!email.trim()) e.email = 'Email is required'
+    else if (!/^\S+@\S+\.\S+$/.test(email)) e.email = 'Enter a valid email'
     if (!password) e.password = 'Password is required'
     else if (password.length < 6) e.password = 'Password must be at least 6 characters'
     setErrors(e)
@@ -33,7 +34,7 @@ export default function Login() {
     if (!validate()) return
     setLoading(true)
     try {
-      await login(identifier, password, remember)
+      await login(email, password, remember)
       navigate('/home', { replace: true })
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Login failed')
@@ -61,11 +62,12 @@ export default function Login() {
 
         <form onSubmit={handleSubmit} noValidate className="space-y-4">
           <Input
-            id="identifier"
-            label="Email / Employee ID"
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
-            error={errors.identifier}
+            id="email"
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={errors.email}
           />
           <Input
             id="password"
