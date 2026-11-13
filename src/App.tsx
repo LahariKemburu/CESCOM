@@ -5,6 +5,7 @@ import Signup from './pages/Auth/Signup/Signup'
 import ForgotPassword from './pages/Auth/ForgotPassword/ForgotPassword'
 import Home from './pages/Home/Home'
 import Unauthorized from './pages/Unauthorized/Unauthorized'
+import PendingUsers from './pages/Admin/PendingUsers'
 import ProtectedRoute from './routes/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 
@@ -24,10 +25,7 @@ export default function App() {
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
-            <Route
-              path="/admin"
-              element={<div className="p-10 text-xl text-navy-800">Admin only page</div>}
-            />
+            <Route path="/admin" element={<PendingUsers />} />
           </Route>
         </Routes>
       </BrowserRouter>

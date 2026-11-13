@@ -19,10 +19,19 @@ export default function Home() {
         <p className="mt-2 text-sm text-slate-500">
           Role: <span className="font-medium text-navy-700">{user?.role}</span>
         </p>
+        {user?.employeeId && (
+          <p className="mt-1 text-sm text-slate-500">
+            Employee ID: <span className="font-medium text-navy-700">{user.employeeId}</span>
+          </p>
+        )}
         <p className="mt-4 text-sm text-slate-500">Dashboard coming in a later phase.</p>
-        <Link to="/admin" className="mt-4 block text-sm text-navy-600 hover:underline">
-          Test admin-only page
-        </Link>
+
+        {user?.role === 'ADMIN' && (
+          <Link to="/admin" className="mt-4 block text-sm font-medium text-navy-600 hover:underline">
+            Manage registration requests
+          </Link>
+        )}
+
         <Button variant="outline" onClick={handleLogout} className="mt-6 w-full gap-2">
           <LogOut size={16} /> Logout
         </Button>
