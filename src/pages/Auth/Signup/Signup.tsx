@@ -1,0 +1,111 @@
+import { useState } from 'react'
+import type { FormEvent } from 'react'
+import { Link } from 'react-router-dom'
+import { CheckCircle2 } from 'lucide-react'
+import Input from '../../../components/common/Input'
+import Button from '../../../components/common/Button'
+import { signup } from '../../../services/auth/authService'
+
+type Form = {
+  fullName: string
+  email: string
+  password: string
+  confirmPassword: string
+}
+
+const empty: Form = { fullName: '', email: '', password: '', confirmPassword: '' }
+
+export default function Signup() {
+  const [form, setForm] = useState<Form>(empty)
+  const [errors, setErrors] = useState<Partial<Form>>({})
+  const [formError, setFormError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+
+  const update = (field: keyof Form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm({ ...form, [field]: e.target.value })
+
+  const validate = () => {
+    const e: Partial<Form> = {}
+    if (!form.fullName.trim()) e.fullName = 'Full name is required'
+    if (!form.email.trim()) e.email = 'Email is required'
+    else if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = 'Enter a valid email'
+    if (!form.password) e.password = 'Password is required'
+    else if (form.password.length < 8) e.password = 'Password must be at least 8 characters'
+    if (!form.confirmPassword) e.confirmPassword = 'Please confirm your password'
+    else if (form.confirmPassword !== form.password) e.confirmPassword = 'Passwords do not match'
+    setErrors(e)
+    return Object.keys(e).length === 0
+  }
+
+  const handleSubmit = async (ev: FormEvent) => {
+    ev.preventDefault()
+    setFormError('')
+    if (!validate()) return
+    setLoading(true)
+    try {
+      // Role and status are set by the backend. Employee ID is generated on approval.
+      await signup({ fullName: form.fullName, email: form.email, password: form.password })
+      setSubmitted(true)
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : 'Something went wrong')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (submitted) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+        <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <CheckCircle2 className="mx-auto mb-3 text-green-600" size={40} />
+          <h1 className="text-xl font-semibold text-navy-800">Request submitted</h1>
+          <p className="mt-2 text-sm text-slate-600">
+            Your registration request has been submitted and is awaiting administrator approval.
+          </p>
+          <Link to="/login">
+            <Button className="mt-6 w-full">Back to login</Button>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-navy-700 font-bold text-white">
+            C
+          </div>
+          <h1 className="text-2xl font-semibold text-navy-800">Create your account</h1>
+          <p className="mt-1 text-sm text-slate-500">Requests are reviewed by an administrator</p>
+        </div>
+
+        {formError && (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {formError}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+          <Input id="fullName" label="Full Name" value={form.fullName} onChange={update('fullName')} error={errors.fullName} />
+          <Input id="email" label="Email" type="email" value={form.email} onChange={update('email')} error={errors.email} />
+          <Input id="password" label="Password" type="password" value={form.password} onChange={update('password')} error={errors.password} />
+          <Input id="confirmPassword" label="Confirm Password" type="password" value={form.confirmPassword} onChange={update('confirmPassword')} error={errors.confirmPassword} />
+
+          <Button type="submit" loading={loading} className="w-full">
+            Submit request
+          </Button>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-slate-500">
+          Already have an account?{' '}
+          <Link to="/login" className="font-medium text-navy-600 hover:underline">
+            Log in
+          </Link>
+        </p>
+      </div>
+    </div>
+  )
+}
