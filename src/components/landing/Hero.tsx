@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth'
 
 function DashboardMockup() {
   const stats = [
@@ -55,6 +56,8 @@ function DashboardMockup() {
 }
 
 export default function Hero() {
+  const { user } = useAuth()
+
   return (
     <section id="product" className="scroll-mt-16 bg-gradient-to-b from-navy-50 to-white">
       <div className="mx-auto max-w-6xl px-4 pb-20 pt-16 text-center sm:pt-24">
@@ -66,18 +69,29 @@ export default function Hero() {
           infrastructure workflows.
         </p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link
-            to="/signup"
-            className="rounded-lg bg-navy-700 px-6 py-3 text-sm font-medium text-white transition hover:bg-navy-800"
-          >
-            Get Started
-          </Link>
-          <Link
-            to="/login"
-            className="rounded-lg border border-slate-300 bg-white px-6 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-          >
-            Sign In
-          </Link>
+          {user ? (
+            <Link
+              to="/home"
+              className="rounded-lg bg-navy-700 px-6 py-3 text-sm font-medium text-white transition hover:bg-navy-800"
+            >
+              Open app
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/signup"
+                className="rounded-lg bg-navy-700 px-6 py-3 text-sm font-medium text-white transition hover:bg-navy-800"
+              >
+                Get Started
+              </Link>
+              <Link
+                to="/login"
+                className="rounded-lg border border-slate-300 bg-white px-6 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+              >
+                Sign In
+              </Link>
+            </>
+          )}
         </div>
         <div className="mx-auto mt-14 max-w-4xl text-left">
           <DashboardMockup />

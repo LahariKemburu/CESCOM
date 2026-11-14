@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { CheckCircle2 } from 'lucide-react'
 import Input from '../../../components/common/Input'
 import Button from '../../../components/common/Button'
 import { signup } from '../../../services/auth/authService'
+import { useAuth } from '../../../hooks/useAuth'
 
 type Form = {
   fullName: string
@@ -16,6 +17,7 @@ type Form = {
 const empty: Form = { fullName: '', email: '', password: '', confirmPassword: '' }
 
 export default function Signup() {
+  const { user } = useAuth()
   const [form, setForm] = useState<Form>(empty)
   const [errors, setErrors] = useState<Partial<Form>>({})
   const [formError, setFormError] = useState('')
@@ -53,6 +55,8 @@ export default function Signup() {
       setLoading(false)
     }
   }
+
+  if (user) return <Navigate to="/home" replace />
 
   if (submitted) {
     return (
