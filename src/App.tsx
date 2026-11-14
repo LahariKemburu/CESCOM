@@ -1,11 +1,13 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Landing from './pages/Landing/Landing'
 import Login from './pages/Auth/Login/Login'
 import Signup from './pages/Auth/Signup/Signup'
 import ForgotPassword from './pages/Auth/ForgotPassword/ForgotPassword'
-import Home from './pages/Home/Home'
 import Unauthorized from './pages/Unauthorized/Unauthorized'
+import Dashboard from './pages/Dashboard/Dashboard'
 import PendingUsers from './pages/Admin/PendingUsers'
+import UsersList from './pages/Admin/UsersList'
+import AppLayout from './components/layout/AppLayout'
 import ProtectedRoute from './routes/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 
@@ -21,11 +23,15 @@ export default function App() {
           <Route path="/unauthorized" element={<Unauthorized />} />
 
           <Route element={<ProtectedRoute />}>
-            <Route path="/home" element={<Home />} />
-          </Route>
+            <Route element={<AppLayout />}>
+              <Route path="/home" element={<Dashboard />} />
 
-          <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
-            <Route path="/admin" element={<PendingUsers />} />
+              <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+                <Route path="/admin" element={<Navigate to="/admin/requests" replace />} />
+                <Route path="/admin/requests" element={<PendingUsers />} />
+                <Route path="/admin/users" element={<UsersList />} />
+              </Route>
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>
