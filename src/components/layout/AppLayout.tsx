@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, LogOut, Menu, UserPlus, Users, X } from 'lucide-react'
+import { Boxes, LayoutDashboard, LogOut, Menu, UserPlus, Users, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import type { Role } from '../../types/auth'
 
 type NavItem = { to: string; label: string; icon: LucideIcon }
 
-const MAIN_ITEMS: NavItem[] = [{ to: '/home', label: 'Dashboard', icon: LayoutDashboard }]
+const MAIN_ITEMS: NavItem[] = [
+  { to: '/home', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/warehouse/items', label: 'Items & Stock', icon: Boxes },
+]
 
 const ADMIN_ITEMS: NavItem[] = [
   { to: '/admin/requests', label: 'Registration Requests', icon: UserPlus },
@@ -62,10 +65,7 @@ export default function AppLayout() {
       </div>
 
       {open && (
-        <div
-          className="fixed inset-0 z-40 bg-slate-900/40 lg:hidden"
-          onClick={() => setOpen(false)}
-        />
+        <div className="fixed inset-0 z-40 bg-slate-900/40 lg:hidden" onClick={() => setOpen(false)} />
       )}
 
       {/* Sidebar */}

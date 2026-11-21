@@ -4,7 +4,9 @@ import Login from './pages/Auth/Login/Login'
 import Signup from './pages/Auth/Signup/Signup'
 import ForgotPassword from './pages/Auth/ForgotPassword/ForgotPassword'
 import Unauthorized from './pages/Unauthorized/Unauthorized'
+import NotFound from './pages/NotFound/NotFound'
 import Dashboard from './pages/Dashboard/Dashboard'
+import Items from './pages/Warehouse/Items'
 import PendingUsers from './pages/Admin/PendingUsers'
 import UsersList from './pages/Admin/UsersList'
 import AppLayout from './components/layout/AppLayout'
@@ -25,6 +27,8 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
               <Route path="/home" element={<Dashboard />} />
+              <Route path="/warehouse" element={<Navigate to="/warehouse/items" replace />} />
+              <Route path="/warehouse/items" element={<Items />} />
 
               <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
                 <Route path="/admin" element={<Navigate to="/admin/requests" replace />} />
@@ -33,6 +37,8 @@ export default function App() {
               </Route>
             </Route>
           </Route>
+
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
